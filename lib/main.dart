@@ -172,6 +172,7 @@ class _MainPageState extends State<MainPage> {
   }
 
   String getPlayerType(Map value) {
+    //source: https://www.w3.org/TR/xml-entity-names/025.html
     switch (value) {
       case Player.start:
         return "╨";
