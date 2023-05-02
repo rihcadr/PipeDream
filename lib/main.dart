@@ -174,21 +174,24 @@ class _MainPageState extends State<MainPage> {
   String getPlayerType(Map value) {
     switch (value) {
       case Player.start:
-        return "START";
+        return "⊔";
       case Player.finish:
-        return "FIN";
+        return "⊓";
       case Player.straightHorizontal:
-        return "horizont";
+        return "║";
       case Player.straightVertical:
-        return "vertical";
+        return "═";
       case Player.curveBL:
-        return "BL";
+        return "╗";
       case Player.curveLT:
-        return "LT";
+        return "╝";
       case Player.curveRB:
-        return "RB";
+        return "╔";
       case Player.curveTR:
-        return "TR";
+        return "╚";
+      //todo: required
+      //case Player.cross:
+      //return "╬";
 
       default:
         return "none";
