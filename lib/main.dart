@@ -58,44 +58,62 @@ class Player {
 class _MainPageState extends State<MainPage> {
 //hier muss alles rein, was setState() braucht
 
+  Queue<Map> elements = Queue<Map>();
+
+  String showQueue() {
+    String buffer = '';
+    for (int i = 1; i < elements.length; i++) {
+      buffer = getPlayerType(elements.elementAt(i)) + '\n' + buffer;
+    }
+    return buffer;
+  }
+
   Queue<Map> elementQueue() {
     // Creating a Queue
-    Queue<Map> elements = Queue<Map>();
 
     // Adding testelement in a Queue
     //Achtung!!! BL wird immer an erster Stelle angezeigt und ist nur zum testen
-    elements.add(Player.curveBL);
+    //elements.add(Player.curveBL);
 
-    Random rnd;
-    int min = 0;
-    int max = 6;
-    rnd = Random();
-    var r = min + rnd.nextInt(max - min);
+    print(elements.length);
+    int add = 1;
+    if (elements.length == 0)
+      add = 5;
+    else
+      elements.removeFirst();
 
-    switch (r) {
-      case 0:
-        elements.add(Player.curveTR);
-        break;
-      case 1:
-        elements.add(Player.curveRB);
-        break;
-      case 2:
-        elements.add(Player.curveBL);
-        break;
-      case 3:
-        elements.add(Player.curveLT);
-        break;
-      case 4:
-        elements.add(Player.straightHorizontal);
-        break;
-      case 5:
-        elements.add(Player.straightVertical);
-        break;
-      default:
-        elements.add(Player.none);
+    for (int i = 0; i < add; i++) {
+      Random rnd;
+      int min = 0;
+      int max = 6;
+      rnd = Random();
+      var r = min + rnd.nextInt(max - min);
+
+      switch (r) {
+        case 0:
+          elements.add(Player.curveTR);
+          break;
+        case 1:
+          elements.add(Player.curveRB);
+          break;
+        case 2:
+          elements.add(Player.curveBL);
+          break;
+        case 3:
+          elements.add(Player.curveLT);
+          break;
+        case 4:
+          elements.add(Player.straightHorizontal);
+          break;
+        case 5:
+          elements.add(Player.straightVertical);
+          break;
+        default:
+          elements.add(Player.none);
+      }
     }
 
-    print(elements);
+    print(getPlayerType(elements.first));
     setState(() {
       elements;
     });
@@ -137,7 +155,7 @@ class _MainPageState extends State<MainPage> {
               height: double.infinity,
               width: 110,
               child: ElevatedButton(
-                child: Text(elementQueue().toString()),
+                child: Text(showQueue()),
                 onPressed: () => false,
               )),
           Column(
@@ -224,7 +242,7 @@ class _MainPageState extends State<MainPage> {
   void selectField(Map value, int x, int y) {
     if (matrix[x][y] == Player.none) {
       setState(() {
-        matrix[x][y] = elementQueue().last;
+        matrix[x][y] = elementQueue().first;
       });
     }
 
