@@ -95,7 +95,7 @@ class _MainPageState extends State<MainPage> {
         elements.add(Player.none);
     }
 
-    print(elements.last);
+    print(elements);
     setState(() {
       elements;
     });
@@ -214,7 +214,8 @@ class _MainPageState extends State<MainPage> {
           minimumSize: Size(size, size),
           primary: color,
         ),
-        child: Text(getPlayerType(value), style: const TextStyle(fontSize: 20)),
+        child: Text(getPlayerType(value),
+            style: const TextStyle(fontSize: 40, fontFamily: 'Courier')),
         onPressed: () => selectField(value, x, y),
       ),
     );
