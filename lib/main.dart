@@ -174,9 +174,9 @@ class _MainPageState extends State<MainPage> {
   String getPlayerType(Map value) {
     switch (value) {
       case Player.start:
-        return "⊔";
+        return "╨";
       case Player.finish:
-        return "⊓";
+        return "╥";
       case Player.straightHorizontal:
         return "║";
       case Player.straightVertical:
