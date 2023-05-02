@@ -138,7 +138,7 @@ class _MainPageState extends State<MainPage> {
               width: 110,
               child: ElevatedButton(
                 child: Text(elementQueue().toString()),
-                onPressed: () => elementQueue(),
+                onPressed: () => false,
               )),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
