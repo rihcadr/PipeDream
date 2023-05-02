@@ -21,11 +21,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: title,
+        title: 'Zeit: 00:59',
         theme: ThemeData(
           primaryColor: Colors.blue,
         ),
-        home: const MainPage(title: title),
+        home: const MainPage(title: 'Zeit: 00:59'),
       );
 }
 
@@ -135,7 +135,7 @@ class _MainPageState extends State<MainPage> {
           Container(
               color: Colors.yellow,
               height: double.infinity,
-              width: 300,
+              width: 110,
               child: ElevatedButton(
                 child: Text(elementQueue().toString()),
                 onPressed: () => elementQueue(),
@@ -195,7 +195,7 @@ class _MainPageState extends State<MainPage> {
       //return "╬";
 
       default:
-        return "none";
+        return "";
     }
   }
 
@@ -214,7 +214,7 @@ class _MainPageState extends State<MainPage> {
           minimumSize: Size(size, size),
           primary: color,
         ),
-        child: Text(getPlayerType(value), style: const TextStyle(fontSize: 14)),
+        child: Text(getPlayerType(value), style: const TextStyle(fontSize: 20)),
         onPressed: () => selectField(value, x, y),
       ),
     );
