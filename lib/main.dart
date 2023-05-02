@@ -175,9 +175,9 @@ class _MainPageState extends State<MainPage> {
     //source: https://www.w3.org/TR/xml-entity-names/025.html
     switch (value) {
       case Player.start:
-        return "╨";
-      case Player.finish:
         return "╥";
+      case Player.finish:
+        return "╨";
       case Player.straightHorizontal:
         return "║";
       case Player.straightVertical:
