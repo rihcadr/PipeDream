@@ -310,6 +310,7 @@ class _MainPageState extends State<MainPage> {
 
   void evaluateGameByTime() {
     gameTime--;
+    setState(() {});
   }
 
   void selectField(Map value, int x, int y) {
