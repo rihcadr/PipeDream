@@ -152,13 +152,28 @@ class _MainPageState extends State<MainPage> {
       body: Row(
         children: [
           Container(
-              color: Colors.yellow,
-              height: double.infinity,
-              width: 110,
-              child: ElevatedButton(
-                child: Text(showQueue()),
-                onPressed: () => false,
-              )),
+            color: Colors.yellow,
+            height: double.infinity,
+            width: 110,
+            // child: ElevatedButton(
+            //   child: Text(showQueue()),
+            //   onPressed: () => false,
+            // )
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                    onPressed: () => false, child: Text(showQueue())),
+                Padding(
+                    padding: EdgeInsets.only(top: 40),
+                    child: ElevatedButton(
+                        onPressed: () {
+                          setEmptyFields();
+                        },
+                        child: Text("Restart")))
+              ],
+            ),
+          ),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: Utils.modelBuilder(matrix, (x, value) => buildRow(x)),
@@ -303,6 +318,7 @@ class _MainPageState extends State<MainPage> {
   bool isEnd() =>
       matrix.every((values) => values.every((value) => value != Player.none));
 
+//das in der Art vielleicht als Enddialog für das Ergebnis des Spiels
   Future showEndDialog(String title) => showDialog(
         context: context,
         barrierDismissible: false,
