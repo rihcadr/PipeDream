@@ -21,11 +21,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: title,
+        title: 'Zeit: 00:59',
         theme: ThemeData(
           primaryColor: Colors.blue,
         ),
-        home: const MainPage(title: title),
+        home: const MainPage(title: 'Zeit: 00:59'),
       );
 }
 
@@ -58,44 +58,62 @@ class Player {
 class _MainPageState extends State<MainPage> {
 //hier muss alles rein, was setState() braucht
 
+  Queue<Map> elements = Queue<Map>();
+
+  String showQueue() {
+    String buffer = '';
+    for (int i = 1; i < elements.length; i++) {
+      buffer = getPlayerType(elements.elementAt(i)) + '\n' + buffer;
+    }
+    return buffer;
+  }
+
   Queue<Map> elementQueue() {
     // Creating a Queue
-    Queue<Map> elements = Queue<Map>();
 
     // Adding testelement in a Queue
     //Achtung!!! BL wird immer an erster Stelle angezeigt und ist nur zum testen
-    elements.add(Player.curveBL);
+    //elements.add(Player.curveBL);
 
-    Random rnd;
-    int min = 0;
-    int max = 6;
-    rnd = Random();
-    var r = min + rnd.nextInt(max - min);
+    print(elements.length);
+    int add = 1;
+    if (elements.length == 0)
+      add = 5;
+    else
+      elements.removeFirst();
 
-    switch (r) {
-      case 0:
-        elements.add(Player.curveTR);
-        break;
-      case 1:
-        elements.add(Player.curveRB);
-        break;
-      case 2:
-        elements.add(Player.curveBL);
-        break;
-      case 3:
-        elements.add(Player.curveLT);
-        break;
-      case 4:
-        elements.add(Player.straightHorizontal);
-        break;
-      case 5:
-        elements.add(Player.straightVertical);
-        break;
-      default:
-        elements.add(Player.none);
+    for (int i = 0; i < add; i++) {
+      Random rnd;
+      int min = 0;
+      int max = 6;
+      rnd = Random();
+      var r = min + rnd.nextInt(max - min);
+
+      switch (r) {
+        case 0:
+          elements.add(Player.curveTR);
+          break;
+        case 1:
+          elements.add(Player.curveRB);
+          break;
+        case 2:
+          elements.add(Player.curveBL);
+          break;
+        case 3:
+          elements.add(Player.curveLT);
+          break;
+        case 4:
+          elements.add(Player.straightHorizontal);
+          break;
+        case 5:
+          elements.add(Player.straightVertical);
+          break;
+        default:
+          elements.add(Player.none);
+      }
     }
 
-    print(elements.last);
+    print(getPlayerType(elements.first));
     setState(() {
       elements;
     });
@@ -133,13 +151,28 @@ class _MainPageState extends State<MainPage> {
       body: Row(
         children: [
           Container(
-              color: Colors.yellow,
-              height: double.infinity,
-              width: 300,
-              child: ElevatedButton(
-                child: Text(elementQueue().toString()),
-                onPressed: () => elementQueue(),
-              )),
+            color: Colors.yellow,
+            height: double.infinity,
+            width: 110,
+            // child: ElevatedButton(
+            //   child: Text(showQueue()),
+            //   onPressed: () => false,
+            // )
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                ElevatedButton(
+                    onPressed: () => false, child: Text(showQueue())),
+                Padding(
+                    padding: EdgeInsets.only(top: 40),
+                    child: ElevatedButton(
+                        onPressed: () {
+                          setEmptyFields();
+                        },
+                        child: Text("Restart")))
+              ],
+            ),
+          ),
           Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: Utils.modelBuilder(matrix, (x, value) => buildRow(x)),
@@ -172,26 +205,30 @@ class _MainPageState extends State<MainPage> {
   }
 
   String getPlayerType(Map value) {
+    //source: https://www.w3.org/TR/xml-entity-names/025.html
     switch (value) {
       case Player.start:
-        return "START";
+        return "╥";
       case Player.finish:
-        return "FIN";
+        return "╨";
       case Player.straightHorizontal:
-        return "horizont";
+        return "║";
       case Player.straightVertical:
-        return "vertical";
+        return "═";
       case Player.curveBL:
-        return "BL";
+        return "╗";
       case Player.curveLT:
-        return "LT";
+        return "╝";
       case Player.curveRB:
-        return "RB";
+        return "╔";
       case Player.curveTR:
-        return "TR";
+        return "╚";
+      //todo: required
+      //case Player.cross:
+      //return "╬";
 
       default:
-        return "none";
+        return "";
     }
   }
 
@@ -210,7 +247,8 @@ class _MainPageState extends State<MainPage> {
           minimumSize: Size(size, size),
           primary: color,
         ),
-        child: Text(getPlayerType(value), style: const TextStyle(fontSize: 14)),
+        child: Text(getPlayerType(value),
+            style: const TextStyle(fontSize: 40, fontFamily: 'Courier')),
         onPressed: () => selectField(value, x, y),
       ),
     );
@@ -219,7 +257,7 @@ class _MainPageState extends State<MainPage> {
   void selectField(Map value, int x, int y) {
     if (matrix[x][y] == Player.none) {
       setState(() {
-        matrix[x][y] = elementQueue().last;
+        matrix[x][y] = elementQueue().first;
       });
     }
 
@@ -245,6 +283,7 @@ class _MainPageState extends State<MainPage> {
   bool isEnd() =>
       matrix.every((values) => values.every((value) => value != Player.none));
 
+//das in der Art vielleicht als Enddialog für das Ergebnis des Spiels
   Future showEndDialog(String title) => showDialog(
         context: context,
         barrierDismissible: false,
