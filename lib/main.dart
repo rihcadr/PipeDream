@@ -1,10 +1,13 @@
 import 'dart:collection';
 import 'dart:math';
 import 'dart:io' show Platform;
+import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:app/utils.dart';
+
+Timer? timer;
 
 Future main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -22,11 +25,11 @@ class MyApp extends StatelessWidget {
   @override
   Widget build(BuildContext context) => MaterialApp(
         debugShowCheckedModeBanner: false,
-        title: 'Zeit: 00:59',
+        title: 'Pipe Dream',
         theme: ThemeData(
           primaryColor: Colors.blue,
         ),
-        home: const MainPage(title: 'Zeit: 00:59'),
+        home: MainPage(title: 'Zeit: not started yet'),
       );
 }
 
@@ -60,6 +63,7 @@ class _MainPageState extends State<MainPage> {
 //hier muss alles rein, was setState() braucht
 
   Queue<Map> elements = Queue<Map>();
+  int gameTime = 90;
 
   String showQueue() {
     String buffer = '';
@@ -139,6 +143,8 @@ class _MainPageState extends State<MainPage> {
     super.initState();
     elementQueue(0);
     setEmptyFields();
+    timer =
+        Timer.periodic(Duration(seconds: 1), (Timer t) => evaluateGameByTime());
   }
 
   //Spielfeldgröße
@@ -154,7 +160,7 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) => Scaffold(
       backgroundColor: Color.fromARGB(255, 123, 143, 160),
       appBar: AppBar(
-        title: Text(widget.title),
+        title: Text('Verbleibende Zeit: $gameTime Sekunden'),
       ),
       body: Row(
         children: [
@@ -296,6 +302,14 @@ class _MainPageState extends State<MainPage> {
         onPressed: () => selectField(value, x, y),
       ),
     );
+  }
+
+  int checkifwon() {
+    return 0;
+  }
+
+  void evaluateGameByTime() {
+    gameTime--;
   }
 
   void selectField(Map value, int x, int y) {
