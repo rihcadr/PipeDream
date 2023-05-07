@@ -1,5 +1,6 @@
 import 'dart:collection';
 import 'dart:math';
+import 'dart:io' show Platform;
 
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -191,30 +192,64 @@ class _MainPageState extends State<MainPage> {
 
   String getPlayerType(Map value) {
     //source: https://www.w3.org/TR/xml-entity-names/025.html
-    switch (value) {
-      case Player.start:
-        return "╥";
-      case Player.finish:
-        return "╨";
-      case Player.straightHorizontal:
-        return "║";
-      case Player.straightVertical:
-        return "═";
-      case Player.curveBL:
-        return "╗";
-      case Player.curveLT:
-        return "╝";
-      case Player.curveRB:
-        return "╔";
-      case Player.curveTR:
-        return "╚";
-      //todo: required
-      //case Player.cross:
-      //return "╬";
-
-      default:
-        return "";
+    String playertype = "";
+    if (!(Platform.isMacOS)) {
+      switch (value) {
+        case Player.start:
+          playertype = "^";
+          break;
+        case Player.finish:
+          playertype = "U";
+          break;
+        case Player.straightHorizontal:
+          playertype = "|";
+          break;
+        case Player.straightVertical:
+          playertype = "-";
+          break;
+        case Player.curveBL:
+          playertype = "7";
+          break;
+        case Player.curveLT:
+          playertype = "J";
+          break;
+        case Player.curveRB:
+          playertype = "F";
+          break;
+        case Player.curveTR:
+          playertype = "L";
+          break;
+      }
+    } else {
+      switch (value) {
+        case Player.start:
+          playertype = "╥";
+          break;
+        case Player.finish:
+          playertype = "╨";
+          break;
+        case Player.straightHorizontal:
+          playertype = "║";
+          break;
+        case Player.straightVertical:
+          playertype = "═";
+          break;
+        case Player.curveBL:
+          playertype = "╗";
+          break;
+        case Player.curveLT:
+          playertype = "╝";
+          break;
+        case Player.curveRB:
+          playertype = "╔";
+          break;
+        case Player.curveTR:
+          playertype = "╚";
+          break;
+      }
     }
+
+    return playertype;
   }
 
   Widget buildField(int x, int y) {
