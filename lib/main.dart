@@ -69,7 +69,7 @@ class _MainPageState extends State<MainPage> {
     return buffer;
   }
 
-  Queue<Map> elementQueue() {
+  Queue<Map> elementQueue(int restart) {
     // Creating a Queue
 
     // Adding testelement in a Queue
@@ -80,7 +80,14 @@ class _MainPageState extends State<MainPage> {
     int add = 1;
     if (elements.length == 0)
       add = 5;
-    else
+    else if (restart == 1) {
+      add = 5;
+      elements.removeFirst();
+      elements.removeFirst();
+      elements.removeFirst();
+      elements.removeFirst();
+      elements.removeFirst();
+    } else
       elements.removeFirst();
 
     for (int i = 0; i < add; i++) {
@@ -130,7 +137,7 @@ class _MainPageState extends State<MainPage> {
   @override
   void initState() {
     super.initState();
-
+    elementQueue(0);
     setEmptyFields();
   }
 
@@ -169,6 +176,7 @@ class _MainPageState extends State<MainPage> {
                     child: ElevatedButton(
                         onPressed: () {
                           setEmptyFields();
+                          elementQueue(1);
                         },
                         child: Text("Restart")))
               ],
@@ -293,7 +301,7 @@ class _MainPageState extends State<MainPage> {
   void selectField(Map value, int x, int y) {
     if (matrix[x][y] == Player.none) {
       setState(() {
-        matrix[x][y] = elementQueue().first;
+        matrix[x][y] = elementQueue(0).first;
       });
     }
 
