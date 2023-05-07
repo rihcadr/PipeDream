@@ -52,8 +52,8 @@ class Player {
   static const curveRB = {'t': 0, 'r': 1, 'b': 1, 'l': 0, 'm': 1};
   static const curveBL = {'t': 0, 'r': 0, 'b': 1, 'l': 1, 'm': 1};
   static const curveLT = {'t': 1, 'r': 0, 'b': 0, 'l': 1, 'm': 1};
-  static const start = {'t': 0, 'r': 0, 'b': 1, 'l': 0, 'm': 1};
-  static const finish = {'t': 1, 'r': 0, 'b': 0, 'l': 0, 'm': 1};
+  static const finish = {'t': 0, 'r': 0, 'b': 1, 'l': 0, 'm': 1};
+  static const start = {'t': 1, 'r': 0, 'b': 0, 'l': 0, 'm': 1};
 
   static const X = 'X';
   static const O = 'O';
@@ -63,7 +63,9 @@ class _MainPageState extends State<MainPage> {
 //hier muss alles rein, was setState() braucht
 
   Queue<Map> elements = Queue<Map>();
-  int gameTime = 90;
+  int gameTime = 10;
+  bool gameWon = false;
+  bool gameOver = false;
 
   String showQueue() {
     String buffer = '';
@@ -160,7 +162,7 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) => Scaffold(
       backgroundColor: Color.fromARGB(255, 123, 143, 160),
       appBar: AppBar(
-        title: Text('Verbleibende Zeit: $gameTime Sekunden'),
+        title: Text(showGameState()),
       ),
       body: Row(
         children: [
@@ -225,10 +227,10 @@ class _MainPageState extends State<MainPage> {
     String playertype = "";
     if (!(Platform.isMacOS)) {
       switch (value) {
-        case Player.start:
+        case Player.finish:
           playertype = "^";
           break;
-        case Player.finish:
+        case Player.start:
           playertype = "U";
           break;
         case Player.straightHorizontal:
@@ -252,10 +254,10 @@ class _MainPageState extends State<MainPage> {
       }
     } else {
       switch (value) {
-        case Player.start:
+        case Player.finish:
           playertype = "╥";
           break;
-        case Player.finish:
+        case Player.start:
           playertype = "╨";
           break;
         case Player.straightHorizontal:
@@ -283,8 +285,8 @@ class _MainPageState extends State<MainPage> {
   }
 
   Widget buildField(int x, int y) {
-    matrix[0][8] = Player.start;
-    matrix[6][0] = Player.finish;
+    matrix[6][0] = Player.start;
+    matrix[0][8] = Player.finish;
 
     final value = matrix[x][y];
     final color = getFieldColor(value);
@@ -299,7 +301,10 @@ class _MainPageState extends State<MainPage> {
         ),
         child: Text(getPlayerType(value),
             style: const TextStyle(fontSize: 40, fontFamily: 'Courier')),
-        onPressed: () => selectField(value, x, y),
+        onPressed: () {
+          evaluateGameByPipeConnectedFromStartToEnd();
+          selectField(value, x, y);
+        },
       ),
     );
   }
@@ -311,6 +316,61 @@ class _MainPageState extends State<MainPage> {
   void evaluateGameByTime() {
     gameTime--;
     setState(() {});
+  }
+
+  void evaluateGameByPipeConnectedFromStartToEnd() {
+    int position_x = 0;
+    int position_y = 6;
+
+    Map position_map;
+    String last_direction = "";
+    bool found_end = false;
+    bool infield = true;
+    int max_tiles = 63;
+    do {
+      max_tiles--;
+      position_map = matrix[position_x][position_y];
+      if ((last_direction != 't') && (position_map['t'] == '1')) {
+        position_y++;
+        last_direction = 't';
+      }
+      if ((last_direction != 'b') && (position_map['b'] == '1')) {
+        position_y--;
+        last_direction = 'b';
+      }
+      if ((last_direction != 'l') && (position_map['l'] == '1')) {
+        position_x--;
+        last_direction = 'l';
+      }
+      if ((last_direction != 'r') && (position_map['r'] == '1')) {
+        position_x++;
+        last_direction = 'r';
+      }
+      if (position_x < 0) infield = false;
+      if (position_x > 8) infield = false;
+      if (position_y < 0) infield = false;
+      if (position_y > 6) infield = false;
+      if ((position_x == 8) && (position_y == 0)) {
+        gameWon = true;
+        gameOver = true;
+      }
+    } while ((found_end == false) &&
+        (max_tiles > 0) &&
+        (infield == true) &&
+        (gameOver == true));
+  }
+
+  String showGameState() {
+    String state;
+    if (gameWon == true) {
+      state = 'Gewonnen, Start und Ende mit durchgezogener Pipe verbunden!';
+    } else if (gameTime < 0) {
+      state = 'Verloren, da Zeit zu Ende!';
+      gameOver = true;
+    } else {
+      state = 'verbleibende Zeit: $gameTime Sekunden';
+    }
+    return state;
   }
 
   void selectField(Map value, int x, int y) {
