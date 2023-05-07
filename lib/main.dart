@@ -46,8 +46,8 @@ class MainPage extends StatefulWidget {
 
 class Player {
   static const none = {'t': 0, 'r': 0, 'b': 0, 'l': 0, 'm': 0};
-  static const straightVertical = {'t': 1, 'r': 0, 'b': 1, 'l': 0, 'm': 1};
-  static const straightHorizontal = {'t': 0, 'r': 1, 'b': 0, 'l': 1, 'm': 1};
+  static const straightVertical = {'t': 0, 'r': 1, 'b': 0, 'l': 1, 'm': 1};
+  static const straightHorizontal = {'t': 1, 'r': 0, 'b': 1, 'l': 0, 'm': 1};
   static const curveTR = {'t': 1, 'r': 1, 'b': 0, 'l': 0, 'm': 1};
   static const curveRB = {'t': 0, 'r': 1, 'b': 1, 'l': 0, 'm': 1};
   static const curveBL = {'t': 0, 'r': 0, 'b': 1, 'l': 1, 'm': 1};
@@ -63,7 +63,7 @@ class _MainPageState extends State<MainPage> {
 //hier muss alles rein, was setState() braucht
 
   Queue<Map> elements = Queue<Map>();
-  int gameTime = 10;
+  int gameTime = 90;
   bool gameWon = false;
   bool gameOver = false;
 
@@ -82,7 +82,6 @@ class _MainPageState extends State<MainPage> {
     //Achtung!!! BL wird immer an erster Stelle angezeigt und ist nur zum testen
     //elements.add(Player.curveBL);
 
-    print(elements.length);
     int add = 1;
     if (elements.length == 0)
       add = 5;
@@ -127,7 +126,6 @@ class _MainPageState extends State<MainPage> {
       }
     }
 
-    print(getPlayerType(elements.first));
     setState(() {
       elements;
     });
@@ -184,6 +182,9 @@ class _MainPageState extends State<MainPage> {
                     child: ElevatedButton(
                         onPressed: () {
                           setEmptyFields();
+                          gameTime = 90;
+                          gameOver = false;
+                          gameWon = false;
                           elementQueue(1);
                         },
                         child: Text("Restart")))
@@ -290,7 +291,6 @@ class _MainPageState extends State<MainPage> {
 
     final value = matrix[x][y];
     final color = getFieldColor(value);
-    // print(value);
 
     return Container(
       margin: const EdgeInsets.all(2),
@@ -302,8 +302,8 @@ class _MainPageState extends State<MainPage> {
         child: Text(getPlayerType(value),
             style: const TextStyle(fontSize: 40, fontFamily: 'Courier')),
         onPressed: () {
+          if (gameOver == false) selectField(value, x, y);
           evaluateGameByPipeConnectedFromStartToEnd();
-          selectField(value, x, y);
         },
       ),
     );
@@ -324,28 +324,36 @@ class _MainPageState extends State<MainPage> {
 
     Map position_map;
     String last_direction = "";
+    String tile = "";
     bool found_end = false;
     bool infield = true;
+    bool moved = false;
     int max_tiles = 63;
+    print('new loop');
     do {
       max_tiles--;
-      position_map = matrix[position_x][position_y];
-      if ((last_direction != 't') && (position_map['t'] == '1')) {
-        position_y++;
-        last_direction = 't';
-      }
-      if ((last_direction != 'b') && (position_map['b'] == '1')) {
+      position_map = matrix[position_y][position_x];
+
+      tile = getPlayerType(position_map);
+      moved = false;
+      if ((last_direction != 't') && (position_map['t'] == 1)) {
         position_y--;
         last_direction = 'b';
-      }
-      if ((last_direction != 'l') && (position_map['l'] == '1')) {
+        moved = true;
+      } else if ((last_direction != 'b') && (position_map['b'] == 1)) {
+        position_y++;
+        last_direction = 't';
+        moved = true;
+      } else if ((last_direction != 'l') && (position_map['l'] == 1)) {
         position_x--;
-        last_direction = 'l';
-      }
-      if ((last_direction != 'r') && (position_map['r'] == '1')) {
-        position_x++;
         last_direction = 'r';
+        moved = true;
+      } else if ((last_direction != 'r') && (position_map['r'] == 1)) {
+        position_x++;
+        last_direction = 'l';
+        moved = true;
       }
+
       if (position_x < 0) infield = false;
       if (position_x > 8) infield = false;
       if (position_y < 0) infield = false;
@@ -354,10 +362,13 @@ class _MainPageState extends State<MainPage> {
         gameWon = true;
         gameOver = true;
       }
+      print(
+          '$tile @ $max_tiles (x,y)$position_x $position_y (infield) $infield (over) $gameOver (moved) $moved (last) $last_direction');
     } while ((found_end == false) &&
         (max_tiles > 0) &&
         (infield == true) &&
-        (gameOver == true));
+        (gameOver == false) &&
+        (moved == true));
   }
 
   String showGameState() {
